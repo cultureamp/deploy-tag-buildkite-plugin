@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+
+# shellcheck source=lib/shared.bash
+. "$DIR/../lib/shared.bash"
+
+
+function main(){
+  local image_ref; image_ref="$(plugin_read_config "IMAGE_REF")"
+
+  if [[ -z "${image_ref}" ]]; then
+    1>&2 echo "+++ ❌ Deploy tag plugin error"
+    1>&2 echo "Missing required parameter: 'image-ref'."
+    exit 1
+  fi
+
+  if [[ -z "${STEP_ENVIRONMENT:-}" ]]; then
+    1>&2 echo "+++ ❌ Deploy tag plugin error"
+    1>&2 echo "Missing environment variable: 'STEP_ENVIRONMENT'."
+    exit 1
+  fi
+
+  local image_tag; image_tag="deployed-${STEP_ENVIRONMENT}"
+  if [[ -n "${FARM:-}" ]]; then
+    image_tag="${image_tag}-${FARM}"
+  fi
+
+  crane tag "${image_ref}" "${image_tag}"
+}
+
+main "$@"

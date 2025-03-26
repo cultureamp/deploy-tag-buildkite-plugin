@@ -1,0 +1,9 @@
+name: Deploy Tag
+description: Applies a unique tag per environment to deployed images. Use with lifecycle rules to prevent in-use images being deleted.
+author: https://github.com/cultureamp
+requirements: ["crane"]
+configuration:
+  properties:
+    image-ref:
+      type: string
+  additionalProperties: false
